@@ -1,0 +1,50 @@
+# Arquivos gerados pelo LaTeX
+*.aux
+*.log
+*.out
+*.toc
+*.lof
+*.lot
+*.fls
+*.fdb_latexmk
+*.synctex.gz
+*.bbl
+*.blg
+*.bcf
+*.run.xml
+*.nav
+*.snm
+*.vrb
+*.xdv
+
+# Latexmk
+*.latexmk
+
+# PDF (opcional)
+.pdf
+
+# Arquivos temporários de editores
+*.swp
+*.swo
+*~
+
+# VS Code
+.vscode/
+
+# TeXstudio
+*.txss
+
+# TeXworks
+*.bak
+
+
+#minted
+_minted*
+*.pyg
+*.aux
+*.log
+*.out
+*.toc
+*.fls
+*.fdb_latexmk
+*.synctex.gz

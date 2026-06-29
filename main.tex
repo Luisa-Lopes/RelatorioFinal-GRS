@@ -1,0 +1,146 @@
+\documentclass[10pt,twocolumn,letterpaper]{IEEEtran}
+
+\usepackage{cvpr}
+
+\usepackage[utf8]{inputenc}
+\usepackage[brazil]{babel}
+
+\usepackage{times}
+\usepackage{epsfig}
+\usepackage{graphicx}
+\usepackage{xcolor}
+
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{bm}
+
+\usepackage{float}
+\usepackage{multicol}
+
+\usepackage{fancyhdr}
+\setlength{\headheight}{1.5cm}
+
+\usepackage{minted}
+\usepackage{caption}
+
+% Faz aparecer "Código" em vez de "Figura"
+\captionsetup[listing]{name=Código}
+
+% Cores do código
+\definecolor{bgcolor}{rgb}{0.95,0.95,0.92}
+\definecolor{commentcolor}{rgb}{0.0,0.5,0.0}
+\definecolor{keywordcolor}{rgb}{0.0,0.0,0.6}
+\definecolor{stringcolor}{rgb}{0.58,0.0,0.82}
+
+% Header
+\fancypagestyle{plain}{
+\lhead{\includegraphics[width=5cm,height=2cm]{logoFT.png}}
+\rhead{\includegraphics[width=5cm,height=2cm]{logoUnB.png}}
+}
+
+\renewcommand{\headrulewidth}{1pt}%
+
+
+% Changing the caption and 'References' names to Portuguese.
+\addto\captionsenglish{
+  \renewcommand{\figurename}{Figura}
+  \renewcommand{\tablename}{Tabela}
+  \renewcommand{\refname}{Referências bibliográficas}
+}
+
+% to-do: Using fontenc with T1 font encoding allows \hyphenation to take words with accents
+% as arguments. However, fontenc with T1 mess up with words containing 'ã' in all \subsection{}
+% commands.
+% If someone knows how to fix it, tell me!
+%
+%\usepackage[T1]{fontenc}
+
+% Put the words not correctly hyphenated down here. Words with accents must
+% be manually hyphenated in the text itself using the '\-' separator. See the examples
+% throughout this template.
+\hyphenation{co-e-ren-te u-sa-do de-li-mi-ta-do-res a-cer-ca va-lo-res cor-res-pon-den-te re-fe-ren-ci-a-das co-lu-na co-lu-nas em-bo-ra u-ti-li-da-de pro-ce-di-men-to ex-pe-ri-men-to fi-gu-ras}
+
+% If you comment hyperref and then uncomment it, you should delete
+% egpaper.aux before re-running latex.  (Or just hit 'q' on the first latex
+% run, let it finish, and you should be clear).
+\usepackage[breaklinks=true,bookmarks=true]{hyperref}
+
+\cvprfinalcopy % *** Uncomment this line for the final submission
+
+%\def\cvprPaperID{****} % *** Enter the CVPR Paper ID here
+%\def\httilde{\mbox{\tt\raisebox{-.5ex}{\symbol{126}}}}
+
+% Pages are numbered in submission mode, and unnumbered in camera-ready
+% \ifcvprfinal\pagestyle{empty}\fi
+%\setcounter{page}{1}
+
+
+\begin{document}
+%%%%%%%%% TITLE
+\title{Relatório 6 - Detecção de intrusão via Snort, utilização do firewall UFW e ferramenta NMAP e Geração de Tráfego via IPerf }
+
+\author{Ana Luísa Silva Lopes\\
+% To save space, use either the email address or home page, not both
+{\tt\small 190102110@aluno.unb.br}\\
+% Matrícula do primeiro autor
+{\tt\small 190102110}\\
+% Turma
+{\tt\small Turma 01}
+}
+
+\maketitle
+%\thispagestyle{empty}
+
+\noindent\textbf{\textit{Resumo-}}\textbf{Este trabalho apresenta a implementação e análise de uma rede de computadores utilizando VLANs, 
+roteamento dinâmico com OSPF e tradução de endereços (NAT). O objetivo desse relatório é analisar a geração de tréfego via Iperf3, utilização do Firewall UFW, ferramenta NMAP e 
+funcionamento do Snort com automatização.
+}
+
+\vspace{0.5cm}
+
+\noindent\textbf{Palavras-chave:}\textit{Iptables, UFW, Snort, NMAP, Iperf3.}
+
+
+%%%%%%%%% BODY TEXT
+\section{Introdução}
+
+O projeto proposto tem o objetivo o análise de ferramentas como Iperf3, UFW, NMAP e Snort. Para isso foi feita a implementado
+ no PNETLab uma infraestrutura de redes composta por 3 VLANs e uma área com um servidor web. 
+Eles são conectados aos switches de acesso, que por sua vez são conectados aos switches core que se comunicam com os roteadores que 
+dão acesso à internet. Para melhor entendimento, abaixo estão algumas definições de redes.
+
+%------------------------------------------------------------------------
+\input{codigo/introducao}
+%------------------------------------------------------------------------
+\input{codigo/aplicacoes}
+%-------------------------------------------------------------------------
+\input{codigo/topologia}
+%-------------------------------------------------------------------------
+\input{codigo/configuracao}
+
+%-------------------------------------------------------------------------
+\input{codigo/resultados}
+
+\section{Conclusão}
+
+Com a realização deste trabalho, foi possível analisar diferentes ferramentas utilizadas no gerenciamento, teste e segurança de redes. As simulações com o Iperf3 permitiram avaliar a largura de banda entre os hosts e verificar o comportamento da rede durante a transmissão de tráfego TCP e UDP, representando cenários de transferência de arquivos e comunicação de voz. Dessa forma, foi possível observar a capacidade da infraestrutura em manter a comunicação entre os dispositivos de forma estável.
+
+O Nmap foi utilizado para realizar varreduras de portas, identificar serviços ativos e obter informações sobre os hosts presentes na rede. A partir dos testes, foi possível reconhecer quais portas estavam abertas, quais serviços estavam disponíveis e como diferentes tipos de varredura auxiliam no diagnóstico e na análise de segurança da infraestrutura.
+
+Com o UFW, foram aplicadas regras de firewall para permitir, bloquear e remover permissões de acesso, principalmente relacionadas ao serviço SSH. Esses testes demonstraram a importância do controle de tráfego por meio de regras simples e objetivas, permitindo validar na prática o funcionamento do bloqueio e da liberação de conexões.
+
+Por fim, o Snort foi utilizado para detectar tráfego ICMP e gerar alertas a partir de regras personalizadas. A integração dos alertas com notificações do sistema mostrou como uma ferramenta de detecção de intrusão pode auxiliar no monitoramento da rede em tempo real. Assim, o conjunto de ferramentas estudado contribuiu para compreender melhor o desempenho, a identificação de serviços, o controle de acesso e a detecção de eventos em uma rede de computadores.
+
+
+%-------------------------------------------------------------------------
+
+{\small
+\bibliography{egbib}
+\bibliographystyle{ieee_fullname}
+}
+
+%-------------------------------------------------------------------------
+\input{codigo/apendice}
+
+
+\end{document}

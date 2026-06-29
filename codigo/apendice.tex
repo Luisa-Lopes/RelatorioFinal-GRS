@@ -1,0 +1,419 @@
+\clearpage
+\onecolumn
+
+\appendices
+
+\section{Configuração do Roteador ROT-ACME}
+
+\begin{listing}[H]
+\centering
+\begin{minted}[
+    bgcolor=bgcolor,
+    frame=lines,
+    breaklines=true,
+    breakanywhere=true,
+    fontsize=\footnotesize,
+]{bash}
+
+vyos@vyos:~$ configure
+
+vyos@vyos:~# set interfaces ethernet eth0 address 192.168.15.3/28
+vyos@vyos:~# set interfaces ethernet eth1 address 172.24.1.254/24 
+vyos@vyos:~# set interfaces ethernet eth1 vif 2 description 'VLAN 2'
+vyos@vyos:~# set interfaces ethernet eth1 vif 10 address '172.24.2.254/24'
+vyos@vyos:~# set interfaces ethernet eth1 vif 10 description 'INTRANET'
+vyos@vyos:~# set interfaces ethernet eth1 vif 10 address '172.24.10.254/24'
+vyos@vyos:~# set interfaces ethernet eth1 vif 20 description 'DATA'
+vyos@vyos:~# set interfaces ethernet eth1 vif 20 address '172.24.20.254/24'
+vyos@vyos:~# set interfaces ethernet eth1 vif 30 description 'DMZ'
+
+
+vyos@vyos:~# set interfaces ethernet eth1 vif 30 address '172.24.30.254/24'
+
+vyos@vyos:~# set protocols static route 0.0.0.0/0 next-hop 192.168.15.1
+
+vyos@vyos:~# set nat source rule 100 outbound-interface name 'eth0'
+vyos@vyos:~# set nat source rule 100 source address '172.24.0.0/16'
+vyos@vyos:~# set nat source rule 100 translation address 'masquerade'
+
+vyos@vyos:~# set service snmp community grs authorization rw
+vyos@vyos:~# set service snmp community grs network 172.24.0.0/16
+vyos@vyos:~# set service snmp community grs client 172.24.1.254
+vyos@vyos:~# set service snmp trap-target 172.24.1.254 community grs
+
+vyos@vyos:~# commit
+vyos@vyos:~# save
+vyos@vyos:~# exit 
+
+\end{minted}
+\caption{Configuração de Roteador ROT-ACME}
+\label{lst:rotacme}
+\end{listing}
+
+
+\section{Configuração do Roteador R1}
+
+O Código \ref{lst:rotR1} apresenta a configuração realizada no roteador R1 utilizando o sistema operacional VyOS. A configuração contempla endereçamento IP, NAT, protocolo OSPF e monitoramento via SNMP.
+
+\begin{listing}[H]
+\centering
+\begin{minted}[
+    bgcolor=bgcolor,
+    frame=lines,
+    breaklines=true,
+    breakanywhere=true,
+    fontsize=\footnotesize,
+]{bash}
+
+vyos@vyos:~$ configure
+vyos@vyos:~# set interfaces ethernet eth0 address dhcp
+vyos@vyos:~# set interfaces ethernet eth1 address 192.168.15.17/28
+vyos@vyos:~# set interfaces ethernet eth2 address 192.168.15.33/28
+vyos@vyos:~# set interfaces loopback lo address 10.1.1.1/32
+
+vyos@vyos:~# set nat source rule 100 outbound-interface 'eth0'
+vyos@vyos:~# set nat source rule 100 source address '192.168.15.0/24'
+vyos@vyos:~# set nat source rule 100 translation address 'masquerade'
+
+vyos@vyos:~# set protocols ospf area 0 network 192.168.122.0/24
+vyos@vyos:~# set protocols ospf area 0 network 192.168.15.16/28
+vyos@vyos:~# set protocols ospf area 0 network 192.168.15.32/28
+
+vyos@vyos:~# set protocols ospf default-information originate 
+vyos@vyos:~# set protocols ospf default-information originate metric 10
+vyos@vyos:~# set protocols ospf default-information originate metric-type 2
+
+vyos@vyos:~# set protocols ospf log-adjacency-changes
+vyos@vyos:~# set protocols ospf parameters router-id 10.1.1.1
+vyos@vyos:~# set protocols ospf redistribute connected metric-type 2
+vyos@vyos:~# set protocols ospf redistribute connected route-map CONNECT
+
+vyos@vyos:~# set policy route-map CONNECT rule 10 action permit
+vyos@vyos:~# set policy route-map CONNECT rule 10 match interface lo
+
+vyos@vyos:~# set service snmp community grs authorization rw
+vyos@vyos:~# set service snmp community grs network 192.168.15.0/24
+vyos@vyos:~# set service snmp community grs client 192.168.15.33
+vyos@vyos:~# set service snmp trap-target 192.168.15.33 community grs
+
+vyos@vyos:~# commit
+vyos@vyos:~# save
+vyos@vyos:~# exit
+
+\end{minted}
+\caption{Configuração do roteador R1 em VyOS}
+\label{lst:rotR1}
+\end{listing}
+
+\section{Configuração do Roteador R2}
+
+\begin{listing}[H]
+\centering
+\begin{minted}[
+    bgcolor=bgcolor,
+    frame=lines,
+    breaklines=true,
+    breakanywhere=true,
+    fontsize=\footnotesize,
+]{bash}
+
+vyos@vyos:~$ configure
+
+vyos@vyos:~# set interfaces ethernet eth0 address dhcp
+vyos@vyos:~# set interfaces ethernet eth1 address 192.168.15.18/28
+vyos@vyos:~# set interfaces ethernet eth2 address 192.168.15.35/28
+vyos@vyos:~# set interfaces ethernet eth3 address 192.168.15.50/28
+vyos@vyos:~# set interfaces loopback lo address 10.2.2.2/32
+
+vyos@vyos:~# set nat source rule 100 outbound-interface name 'eth0'
+vyos@vyos:~# set nat source rule 100 source address '192.168.15.0/24'
+vyos@vyos:~# set nat source rule 100 translation address 'masquerade'
+
+vyos@vyos:~# set protocols ospf area 0 network 192.168.15.0/28
+vyos@vyos:~# set protocols ospf area 0 network 192.168.15.16/28
+vyos@vyos:~# set protocols ospf area 0 network 192.168.15.32/28
+vyos@vyos:~# set protocols ospf area 0 network 192.168.15.48/28
+
+vyos@vyos:~# set protocols ospf default-information originate
+vyos@vyos:~# set protocols ospf default-information originate metric 100
+vyos@vyos:~# set protocols ospf default-information originate metric-type 2
+
+vyos@vyos:~# set protocols ospf log-adjacency-changes
+vyos@vyos:~# set protocols ospf parameters router-id 10.2.2.2
+vyos@vyos:~# set protocols ospf redistribute connected metric-type 2
+vyos@vyos:~# set protocols ospf redistribute connected route-map CONNECT
+
+vyos@vyos:~# set policy route-map CONNECT rule 10 action permit
+vyos@vyos:~# set policy route-map CONNECT rule 10 match interface lo
+
+vyos@vyos:~# set service snmp community grs authorization rw
+vyos@vyos:~# set service snmp community grs network 192.168.15.0/24
+vyos@vyos:~# set service snmp community grs client 192.168.15.50
+vyos@vyos:~# set service snmp trap-target 192.168.15.50 community grs
+
+vyos@vyos:~# commit
+vyos@vyos:~# save
+vyos@vyos:~# exit 
+
+\end{minted}
+\caption{Configuração de Roteador R2}
+\label{lst:rotR2}
+\end{listing}
+
+\section{Configuração do Roteador R3}
+
+\begin{listing}[H]
+\centering
+\begin{minted}[
+    bgcolor=bgcolor,
+    frame=lines,
+    breaklines=true,
+    breakanywhere=true,
+    fontsize=\footnotesize,
+]{bash}
+configure
+
+# Interfaces
+set interfaces ethernet eth0 address 192.168.15.1/28
+set interfaces ethernet eth1 address 192.168.15.19/28
+set interfaces ethernet eth2 address 192.168.15.34/28
+set interfaces ethernet eth3 address 192.168.15.49/28
+set interfaces loopback lo address 10.3.3.3/32
+
+# OSPF
+set protocols ospf area 0 network 192.168.15.0/28
+set protocols ospf area 0 network 192.168.15.16/28
+set protocols ospf area 0 network 192.168.15.32/28
+set protocols ospf area 0 network 192.168.15.48/28
+
+vyos@vyos:~# set protocols ospf log-adjacency-changes
+vyos@vyos:~# set protocols ospf parameters router-id 10.3.3.3
+vyos@vyos:~# set protocols ospf redistribute connected metric-type 2
+vyos@vyos:~# set protocols ospf redistribute connected route-map CONNECT
+
+# Route-map
+set policy route-map CONNECT rule 10 action 'permit'
+set policy route-map CONNECT rule 10 match interface 'lo'
+
+# SNMP
+set service snmp community grs authorization 'rw'
+set service snmp community grs network '192.168.15.0/24'
+set service snmp community grs client '192.168.15.1'
+set service snmp trap-target '192.168.15.1' community 'grs'
+
+commit
+save
+exit
+
+\end{minted}
+\caption{Configuração de Roteador R3}
+\label{lst:rotR3}
+\end{listing}
+
+\section{Configuração de Switch EXOS1}
+
+\begin{listing}[H]
+\centering
+\begin{minted}[
+    bgcolor=bgcolor,
+    frame=lines,
+    breaklines=true,
+    breakanywhere=true,
+    fontsize=\footnotesize,
+]{bash}
+
+configure vlan default del ports all
+create vlan EXOS1
+configure vlan EXOS1 tag 2
+create vlan ENE
+configure vlan ENE tag 10
+create vlan PPEE
+configure vlan PPEE tag 20
+create vlan GERENCIA
+
+configure vlan GERENCIA tag 30
+configure vlan 30 add port 4 untagged
+configure vlan 30 add port 5 untagged
+configure vlan 2,10,20,30 add port 1,2,3 tagged
+
+configure vlan EXOS1 ipaddress 172.24.2.1/24
+configure iproute add default 172.24.2.254
+
+configure snmp add community readwrite grs
+configure snmp sysContact EXOS1
+configure snmp sysName EXOS1
+enable snmp access snmp-v1v2c 
+
+save 
+
+\end{minted}
+\caption{Configuração de Switch EXOS1}
+\label{lst:exos1}
+\end{listing}
+
+\section{Configuração de Switch EXOS2}
+
+\begin{listing}[H]
+\centering
+\begin{minted}[
+    bgcolor=bgcolor,
+    frame=lines,
+    breaklines=true,
+    breakanywhere=true,
+    fontsize=\footnotesize,
+]{bash}
+
+configure vlan default del ports all
+create vlan EXOS2
+configure vlan EXOS2 tag 2
+create vlan ENE
+configure vlan ENE tag 10
+create vlan PPEE
+configure vlan PPEE tag 20
+create vlan GERENCIA
+
+configure vlan GERENCIA tag 30
+configure vlan 2,10-30 add port 1 tagged
+configure vlan 10 add port 2 untagged
+configure vlan 20 add port 3 untagged
+configure vlan 30 add port 4 untagged
+
+configure vlan EXOS2 ipaddress 172.24.2.2/24
+configure iproute add default 172.24.2.254 
+
+configure snmp add community readwrite grs
+configure snmp sysContact EXOS2
+configure snmp sysName EXOS2
+enable snmp access snmp-v1v2c 
+
+save 
+
+
+
+\end{minted}
+\caption{Configuração de Switch EXOS2}
+\label{lst:exos2}
+\end{listing}
+
+\section{Configuração de Switch EXOS3}
+
+\begin{listing}[H]
+\centering
+\begin{minted}[
+    bgcolor=bgcolor,
+    frame=lines,
+    breaklines=true,
+    breakanywhere=true,
+    fontsize=\footnotesize,
+]{bash}
+
+configure vlan default del ports all
+create vlan EXOS3
+configure vlan EXOS3 tag 2
+create vlan ENE
+configure vlan ENE tag 10
+create vlan PPEE
+configure vlan PPEE tag 20
+create vlan GERENCIA
+
+configure vlan GERENCIA tag 30
+configure vlan 2,10-30 add port 1 tagged
+configure vlan 10 add port 2 untagged
+configure vlan 20 add port 3 untagged
+configure vlan 30 add port 4 untagged
+
+configure vlan EXOS3 ipaddress 172.24.2.3/24
+configure iproute add default 172.24.2.254 
+
+configure snmp add community readwrite grs
+configure snmp sysContact EXOS3
+configure snmp sysName EXOS3
+enable snmp access snmp-v1v2c 
+
+save
+
+
+\end{minted}
+\caption{Configuração de Switch EXOS3}
+\label{lst:exos3}
+\end{listing}
+
+\section{Arquivo monitor.py}
+
+\begin{listing}[H]
+\centering
+\begin{minted}[
+    bgcolor=bgcolor,
+    frame=lines,
+    breaklines=true,
+    breakanywhere=true,
+    fontsize=\footnotesize,
+]{python}
+
+ultima_not = {}
+cooldown = 30
+
+with open("/var/log/snort/alert.fast", "r") as f:
+    f.seek(0, 2)
+
+    while True:
+        agora = time.time()
+
+        linha = f.readline()
+
+        if not linha:
+            time.sleep(0.5)
+            continue
+
+        match = re.search(
+            r"(\d+\.\d+\.\d+\.\d+).*->\s*(\d+\.\d+\.\d+\.\d+)",
+            linha
+        )
+
+        if not match:
+            continue
+
+        ip_origem = match.group(1)
+        ip_destino = match.group(2)
+
+        if ip_destino != myIp:
+            continue
+
+        tipo = None
+
+        if "ICMP DETECTADO" in linha:
+            tipo = "ICMP"
+
+        elif "SSH DETECTADO" in linha:
+            tipo = "SSH"
+
+        elif "HTTP DETECTADO" in linha:
+            tipo = "HTTP"
+
+        elif "HTTPS DETECTADO" in linha:
+            tipo = "HTTPS"
+
+        if not tipo:
+            continue
+
+        chave = f"{ip_origem}_{tipo}"
+
+        if (
+            chave not in ultima_not
+            or agora - ultima_not[chave] > cooldown
+        ):
+
+            subprocess.run([
+                "notify-send",
+                "Snort",
+                f"Ataque {tipo} detectado de {ip_origem}"
+            ])
+
+            ultima_not[chave] = agora
+			
+
+\end{minted}
+\caption{Arquivo monitor.py}
+\label{lst:monitor}
+\end{listing}
+

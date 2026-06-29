@@ -1,0 +1,40 @@
+\section{Aplicações Utilizadas}
+
+\subsection{PNETLab}
+
+Para a implementação da rede de infraestrutura, foi utilizado o ambiente virtual PNETLab\cite{pnetlab}. Essa plataforma permite a criação de cenários complexos com roteadores, switches e hosts, possibilitando a simulação de infraestruturas reais de rede.
+
+O PNETLab foi empregado para configurar e interligar os dispositivos da topologia, executar os comandos de configuração e realizar testes de conectividade entre os nós da rede. Dessa forma, foi possível analisar o comportamento do sistema e validar o funcionamento dos protocolos e serviços implementados, como VLANs, OSPF e NAT, sem a necessidade de equipamentos físicos.
+
+\subsubsection{IpTables}
+
+O Iptables é uma ferramenta de firewall utilizada em sistemas Linux para controlar e filtrar o tráfego de rede. Por meio de regras definidas pelo administrador, é possível permitir ou bloquear conexões, aumentando a segurança da rede e do sistema. Seu funcionamento é baseado em tabelas e cadeias (\textit{chains}) responsáveis pelo tratamento dos pacotes. As principais tabelas são: \begin{itemize} \item \textbf{Filter:} utilizada para permitir ou bloquear pacotes de entrada, saída e encaminhamento. \item \textbf{NAT:} responsável pela tradução de endereços IP, sendo utilizada em mascaramento e redirecionamento de portas. \item \textbf{Mangle:} utilizada para modificar informações dos pacotes de rede. \end{itemize}
+
+Em conclusão, o Iptables é uma ferramenta essencial para segurança e gerenciamento de redes em sistemas Linux. 
+Sua estrutura baseada em tabelas e cadeias permite controlar o tráfego de forma eficiente, possibilitando a criação 
+de regras para filtragem, tradução de endereços e manipulação de pacotes. Dessa forma, o Iptables contribui para 
+a proteção, organização e controle das comunicações em ambientes computacionais.
+
+
+\subsubsection{UFW}
+
+O UFW (\textit{Uncomplicated Firewall}) é uma ferramenta de gerenciamento de firewall desenvolvida para simplificar a configuração de regras de segurança em sistemas Linux. Ele funciona como uma interface mais simples para o Iptables, permitindo que o usuário configure políticas de rede por meio de comandos mais intuitivos e de fácil utilização.
+
+Com o UFW, é possível permitir ou bloquear conexões de entrada e saída, controlar portas específicas e definir regras para diferentes serviços de rede. Sua utilização é bastante comum em servidores Linux devido à facilidade de configuração e ao rápido gerenciamento das regras de firewall.
+
+Além disso, o UFW oferece suporte tanto para protocolos IPv4 quanto IPv6, contribuindo para uma administração mais completa da segurança da rede. Dessa forma, a ferramenta se destaca por proporcionar uma maneira prática e eficiente de implementar políticas de controle de tráfego e proteção em sistemas computacionais.
+
+
+\subsection{Iperf3}
+O iPerf3 é uma ferramenta para medições ativas da largura de banda máxima alcançável
+ em redes IP. Ele suporta o ajuste de vários parâmetros relacionados a temporização, buffers e protocolos (TCP, UDP, SCTP com IPv4 e IPv6). Para cada teste, ele reporta a largura de banda, a perda de pacotes e outros parâmetros.
+
+\subsection{NMAP}
+
+O Nmap ("Mapeador de Rede") é um utilitário gratuito e de código aberto para descoberta de redes e auditoria de segurança. Muitos administradores de sistemas e redes também o consideram útil para tarefas como inventário de rede, gerenciamento de cronogramas de atualização de serviços e monitoramento do tempo de atividade de hosts ou serviços. O Nmap utiliza pacotes IP brutos de maneiras inovadoras para determinar quais hosts estão disponíveis na rede, quais serviços (nome e versão do aplicativo) esses hosts oferecem, quais sistemas operacionais (e versões do SO) estão em execução, que tipo de filtros de pacotes/firewalls estão em uso e dezenas de outras características. Ele foi projetado para escanear rapidamente grandes redes, mas funciona bem com hosts individuais. 
+
+\subsection{SNORT}
+
+O Snort é o principal Sistema de Prevenção de Intrusões (IPS) de código aberto do mundo. O Snort IPS utiliza uma série de regras que ajudam a definir atividades maliciosas na rede e usa essas regras para encontrar pacotes que correspondam a elas, gerando alertas para os usuários.
+
+O Snort também pode ser implementado em linha para bloquear esses pacotes. O Snort tem três usos principais: como um analisador de pacotes, semelhante ao tcpdump; como um registrador de pacotes — útil para depuração de tráfego de rede; ou como um sistema completo de prevenção de intrusões em redes. 
