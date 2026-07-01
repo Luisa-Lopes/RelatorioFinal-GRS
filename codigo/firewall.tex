@@ -1,57 +1,119 @@
 \section{Configuração do firewall}
 
-\subsection{IpTables}
 
-Iptables é uma ferramenta de firewall para sistemas Linux que atua como uma espécie de 
-“guarda de fronteira” entre o seu computador e a internet. Ela permite controlar o tráfego de rede, 
-decidindo quais conexões são permitidas e quais são bloqueadas.
+O controle de acesso entre as redes foi realizado utilizando o firewall \textit{pfSense Community Edition}, responsável pela interligação entre o roteador de borda (R3) e o roteador interno VyOS. Além da filtragem de pacotes, o pfSense também foi configurado para realizar o roteamento entre redes, tradução de endereços (NAT), publicação de serviços e aplicação das políticas de segurança da infraestrutura.
 
-
-No iptables, existem quatro tabelas principais, 
-cada uma com suas cadeias (chains) e propósitos específicos:
-
-\subsubitem{Tabela Filter}
-Essa é a tabela padrão do iptables e é usada para filtrar o tráfego de pacotes com base em regras definidas. 
-As três cadeias padrão nesta tabela são:
-
-\begin{itemize}
-    \item \textbf{INPUT: } Essa cadeia lida com pacotes destinados à própria máquina (tráfego de entrada).
-    \item \textbf{OUTPUT: } Essa cadeia lida com pacotes originados na própria máquina e enviados a outros 
-    destinos (tráfego de saída).
-    \item \textbf{FORWARD: }  Essa cadeia lida com pacotes que estão apenas passando pelo sistema, 
-    atuando como um roteador.
-    
-\end{itemize}
+Inicialmente, foram configuradas as interfaces de rede do firewall, conforme apresentado na Figura \ref{fig:pfsense7}. A interface WAN foi configurada com o endereço IP \texttt{192.168.15.2/24}, conectada ao roteador de borda, enquanto a interface LAN recebeu o endereço \texttt{172.24.254.1/30}, utilizada para comunicação com o roteador VyOS. Além disso, foi criada a interface OPT4, associada à VLAN da DMZ, configurada com o endereço \texttt{172.24.10.1/24}, permitindo que essa rede fosse tratada de forma independente pelas políticas do firewall.
 
 
-\subsubitem{Tabela NAT}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\linewidth]{fig/pfsense/pfsense7.png}
+    \caption{Configuração dos IPs firewall Pfsense}
+    \label{fig:pfsense7}
+\end{figure}
 
-Essa tabela é usada para realizar a tradução de endereços de rede, geralmente usada para redirecionamento 
-de portas (port forwarding) ou para mascaramento de endereços IP (SNAT – Source Network Address Translation).
-As cadeias padrão nesta tabela são:
+Após a configuração das interfaces, foi habilitado o serviço DHCP na interface correspondente à DMZ, conforme ilustrado na Figura \ref{fig:pfsense8}. O servidor DHCP foi configurado para distribuir endereços IP automaticamente aos equipamentos conectados à rede \texttt{172.24.10.0/24}, definindo também parâmetros como máscara de sub-rede, gateway padrão e demais informações necessárias para a comunicação dos dispositivos dessa rede.
 
 
-\begin{itemize}
-    \item \textbf{PREROUTING: } Essa cadeia é utilizada para modificar pacotes antes de serem roteados, 
-    permitindo o redirecionamento de portas.
-    \item \textbf{OUTPUT: }  Esta cadeia é usada para modificar pacotes gerados localmente antes de 
-    saírem do sistema.
-    \item \textbf{POSTROUTING:  }  Esta cadeia é usada para modificar pacotes gerados localmente 
-    antes de saírem do sistema.
-    
-\end{itemize}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\linewidth]{fig/pfsense/pfsense8.png}
+    \caption{Configuração DHCP para rede DMZ}
+    \label{fig:pfsense7}
+\end{figure}
 
-\subsubitem{Tabela Mangle}
+Em seguida, foi realizada a configuração dos gateways utilizados pelo firewall, apresentada na Figura \ref{fig:pfsense1}. O gateway padrão (\textit{GW\_WAN}) foi associado ao roteador de borda, responsável pelo encaminhamento do tráfego destinado à Internet através do endereço \texttt{192.168.15.1}. Também foi cadastrado um gateway adicional apontando para o roteador VyOS (\texttt{172.24.254.2}), permitindo o encaminhamento das redes internas existentes atrás desse equipamento.
 
-A tabela mangle é usada para modificar os cabeçalhos dos pacotes. É usada principalmente para marcação de
-pacotes para posterior manipulação por outras regras ou ferramentas. As cadeias padrão nesta tabela são:
 
-\begin{itemize}
-    \item \textbf{PREROUTING: } Usada para modificar pacotes antes de serem roteados.
-    \item  \textbf{INPUT: } Usada para modificar pacotes de entrada antes de serem entregues localmente.
-    \item  \textbf{FORWARD: } Usada para modificar pacotes que estão apenas passando pelo sistema.
-    \item \textbf{OUTPUT: }  Usada para modificar pacotes de saída antes de deixarem o sistema.
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\linewidth]{fig/pfsense/pfsense1.png}
+    \caption{Configuração do gateway ROT-ACME}
+    \label{fig:pfsense1}
+\end{figure}
 
-    \item \textbf{POSTROUTING:  }  Usada para modificar pacotes após o roteamento
-    
-\end{itemize}
+Como as redes da Intranet e do Datacenter são roteadas pelo VyOS, foi necessário criar rotas estáticas no pfSense para que os pacotes destinados a essas sub-redes fossem corretamente encaminhados. Conforme mostrado na Figura \ref{fig:pfsense2}, foram adicionadas rotas para as redes \texttt{172.24.20.0/24} e \texttt{172.24.30.0/24}, ambas utilizando o gateway configurado para o VyOS.
+
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\linewidth]{fig/pfsense/pfsense2.png}
+    \caption{Configuração das redes estáticas}
+    \label{fig:pfsense2}
+\end{figure}
+
+Para facilitar a criação e manutenção das regras de firewall, foi criado um \textit{Firewall Alias}, apresentado na Figura \ref{fig:pfsense3}. O alias denominado \texttt{REDES\_VYOS} agrupa todas as redes roteadas pelo VyOS, incluindo a rede administrativa (\texttt{172.24.1.0/24}), a rede da Intranet (\texttt{172.24.20.0/24}) e a rede do Datacenter (\texttt{172.24.30.0/24}). A utilização de aliases simplifica a configuração das regras de acesso, reduzindo a duplicação de configurações e facilitando futuras alterações na infraestrutura.
+
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\linewidth]{fig/pfsense/pfsense3.png}
+    \caption{Criação do Firewall Aliases IP}
+    \label{fig:pfsense3}
+\end{figure}
+
+Na etapa seguinte, foi configurado o mecanismo de tradução de endereços de saída (Outbound NAT), conforme apresentado na Figura \ref{fig:pfsense4}. Foi adotado o modo \textit{Hybrid Outbound NAT}, permitindo a utilização das regras automáticas do pfSense juntamente com regras personalizadas. Dessa forma, foram criadas regras específicas para as redes DMZ (\texttt{172.24.10.0/24}), Intranet (\texttt{172.24.20.0/24}) e Datacenter (\texttt{172.24.30.0/24}), possibilitando que todas as sub-redes internas compartilhassem o endereço IP da interface WAN para acesso à Internet.
+
+
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\linewidth]{fig/pfsense/pfsense4.png}
+    \caption{Configuração NAT Outbound}
+    \label{fig:pfsense4}
+\end{figure}
+
+Para disponibilizar o servidor Web localizado na DMZ aos usuários externos, foi configurado o recurso de \textit{Port Forward}, ilustrado na Figura \ref{fig:pfsense5}. Foram criadas regras de redirecionamento para as portas HTTP (80) e HTTPS (443), direcionando todo o tráfego recebido na interface WAN para o servidor Web hospedado no endereço \texttt{172.24.10.14}. Essa configuração permitiu que o serviço fosse acessado externamente utilizando o endereço IP público da interface WAN do firewall.
+
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\linewidth]{fig/pfsense/pfsense5.png}
+    \caption{Configuração NAT Port Forward}
+    \label{fig:pfsense5}
+\end{figure}
+
+Após a configuração do NAT, foram definidas as regras de filtragem da interface WAN, apresentadas na Figura \ref{fig:pfsense6}. As regras permitem exclusivamente o tráfego destinado às portas HTTP e HTTPS do servidor Web publicado na DMZ, restringindo os demais acessos externos. Dessa forma, apenas os serviços explicitamente disponibilizados permanecem acessíveis a partir da rede externa, reduzindo a superfície de ataque da infraestrutura.
+
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\linewidth]{fig/pfsense/pfsense6.png}
+    \caption{Configuração de regras WAN}
+    \label{fig:pfsense6}
+\end{figure}
+
+As principais políticas de segurança foram implementadas na interface LAN, responsável por receber o tráfego proveniente das redes roteadas pelo VyOS. Conforme ilustrado nas Figuras \ref{fig:pfsense9} e \ref{fig:pfsense10}, foram criadas regras específicas para controlar a comunicação entre as diferentes zonas da rede.
+
+Inicialmente, foi permitido que os servidores localizados na DMZ realizassem consultas ao servidor DNS do Datacenter, autorizando exclusivamente o tráfego destinado à porta 53 (TCP/UDP). Em seguida, foi criada uma regra bloqueando qualquer outro acesso da DMZ ao Datacenter, impedindo que servidores expostos externamente estabelecessem conexões diretas com os servidores internos.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\linewidth]{fig/pfsense/pfsense9.png}
+    \caption{Configuração de regras LAN}
+    \label{fig:pfsense9}
+\end{figure}
+
+Também foram implementadas regras para restringir o acesso da Intranet ao Datacenter. O acesso foi permitido apenas aos serviços essenciais, como DNS (porta 53) e compartilhamento de arquivos Samba (portas 139 e 445), sendo posteriormente adicionada uma regra de bloqueio para impedir qualquer outra comunicação entre essas redes. Essa abordagem segue o princípio do menor privilégio, permitindo apenas os serviços necessários ao funcionamento da infraestrutura.
+
+Ainda na interface LAN, foi utilizada a alias \texttt{REDES\_VYOS} para simplificar a criação das regras de acesso às redes roteadas pelo VyOS. A utilização de aliases reduz a quantidade de regras necessárias e facilita futuras alterações na topologia da rede.
+
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\linewidth]{fig/pfsense/pfsense10.png}
+    \caption{Configuração de regras LAN}
+    \label{fig:pfsense10}
+\end{figure}
+
+
+Por fim, a interface OPT4, correspondente à rede DMZ, recebeu regras específicas de segurança, conforme apresentado na Figura \ref{fig:pfsense11}. Foi criada uma regra bloqueando qualquer tentativa de acesso da DMZ à rede da Intranet, evitando que um eventual comprometimento de servidores públicos possibilitasse movimentação lateral para a rede interna da organização. As demais regras permitem apenas o tráfego necessário para o funcionamento dos serviços publicados e para a comunicação previamente autorizada pelas políticas definidas no firewall.
+
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\linewidth]{fig/pfsense/pfsense11.png}
+    \caption{Configuração de regras OPT4}
+    \label{fig:pfsense11}
+\end{figure}

@@ -85,35 +85,7 @@ O acesso ao servidor é realizado utilizando o comando:
 \texttt{sftp user@172.24.10.15}
 \end{center}
 
-\subsubsection{Resultados do serviço SFTP}
 
-Após a autenticação, foram realizados testes de envio e recebimento de arquivos para validar o funcionamento do serviço SFTP.
-
-Os principais comandos utilizados foram:
-
-\begin{itemize}
-    \item Enviar um arquivo:
-    \begin{center}
-        \texttt{put teste.txt}
-    \end{center}
-
-    \item Enviar um diretório:
-    \begin{center}
-        \texttt{put -r Documentos}
-    \end{center}
-
-    \item Baixar um arquivo:
-    \begin{center}
-        \texttt{get relatorio.pdf}
-    \end{center}
-
-    \item Baixar um diretório:
-    \begin{center}
-        \texttt{get -r backup}
-    \end{center}
-\end{itemize}
-
-Os testes confirmaram o correto funcionamento do serviço, permitindo a transferência de arquivos entre o cliente e o servidor utilizando o protocolo SFTP de forma segura através da porta TCP 22.
 
 \subsection{Configuração do Servidor Samba}
 
@@ -188,7 +160,7 @@ Inicialmente, foi necessário acessar o menu de administração do Grafana para 
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=1\linewidth]{fig/grafanaAdm.png}
+    \includegraphics[width=1\linewidth]{fig/zabbix/grafanaAdm.png}
     \caption{Acesso ao menu de gerenciamento de plug-ins do Grafana: 1. Administração; 2. Plug-ins e dados; 3. Plug-ins.}
     \label{fig:grafanaAdm}
 \end{figure}
@@ -197,7 +169,7 @@ Após acessar a área de plug-ins, realizou-se a pesquisa do plug-in PostgreSQL 
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=1\linewidth]{fig/grafanaPostgreP.png}
+    \includegraphics[width=1\linewidth]{fig/zabbix/grafanaPostgreP.png}
     \caption{Pesquisa do plug-in PostgreSQL: 1. Campo de pesquisa; 2. Plug-in PostgreSQL.}
     \label{fig:grafanaPostgreP}
 \end{figure}
@@ -206,7 +178,7 @@ A Figura~\ref{fig:grafanaPostgresE} apresenta a página do plug-in PostgreSQL no
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=1\linewidth]{fig/grafanaPostgresE.png}
+    \includegraphics[width=1\linewidth]{fig/zabbix/grafanaPostgresE.png}
     \caption{Página do plug-in PostgreSQL no Grafana.}
     \label{fig:grafanaPostgresE}
 \end{figure}
@@ -215,7 +187,7 @@ De maneira semelhante, realizou-se a pesquisa do plug-in Zabbix no catálogo de 
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=1\linewidth]{fig/grafanaZabbixP.png}
+    \includegraphics[width=1\linewidth]{fig/zabbix/grafanaZabbixP.png}
     \caption{Pesquisa do plug-in Zabbix: 1. Campo de pesquisa; 2. Plug-in Zabbix.}
     \label{fig:grafanaZabbixP}
 \end{figure}
@@ -224,7 +196,7 @@ Por fim, a Figura~\ref{fig:grafanaZabbixE} apresenta a tela do plug-in Zabbix j�
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=1\linewidth]{fig/grafanaZabbixE.png}
+    \includegraphics[width=1\linewidth]{fig/zabbix/grafanaZabbixE.png}
     \caption{Página do plug-in Zabbix no Grafana.}
     \label{fig:grafanaZabbixE}
 \end{figure}
@@ -233,7 +205,7 @@ Após a instalação dos plug-ins necessários, realizou-se a configuração da 
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=1\linewidth]{fig/conexao.png}
+    \includegraphics[width=1\linewidth]{fig/zabbix/conexao.png}
     \caption{Acesso ao menu de conexões do Grafana: 1. Conexões; 2. Adicionar nova conexão.}
     \label{fig:conexaoGrafana}
 \end{figure}
@@ -242,7 +214,7 @@ Em seguida, foi realizada a pesquisa do plug-in Zabbix no catálogo de conexões
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=1\linewidth]{fig/conexaoZabbix.png}
+    \includegraphics[width=1\linewidth]{fig/zabbix/conexaoZabbix.png}
     \caption{Pesquisa da conexão Zabbix: 1. Campo de pesquisa; 2. Aplicação Zabbix.}
     \label{fig:conexaoZabbixPesquisa}
 \end{figure}
@@ -251,7 +223,7 @@ Posteriormente, foram configurados os parâmetros iniciais da conexão, incluind
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=1\linewidth]{fig/conexaoZabbix2.png}
+    \includegraphics[width=1\linewidth]{fig/zabbix/conexaoZabbix2.png}
     \caption{Configuração inicial da conexão Zabbix: 1. Nome da conexão; 2. URL da API do Zabbix.}
     \label{fig:conexaoZabbixConfig}
 \end{figure}
@@ -260,7 +232,7 @@ Na sequência, foram definidos os parâmetros de autenticação da conexão, uti
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=1\linewidth]{fig/conexaoZabbix3.png}
+    \includegraphics[width=1\linewidth]{fig/zabbix/conexaoZabbix3.png}
     \caption{Configuração de autenticação da conexão Zabbix: 1. Configuração de autenticação e credenciais de acesso.}
     \label{fig:conexaoZabbixAuth}
 \end{figure}
@@ -269,7 +241,7 @@ Por fim, habilitou-se a opção de conexão direta com o banco de dados PostgreS
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=1\linewidth]{fig/conexaoZabbix4.png}
+    \includegraphics[width=1\linewidth]{fig/zabbix/conexaoZabbix4.png}
     \caption{Configuração final da conexão Zabbix: 1. Habilitar conexão direta; 2. Seleção da fonte de dados PostgreSQL; 3. Salvar e testar conexão.}
     \label{fig:conexaoZabbixFinal}
 \end{figure}
@@ -280,7 +252,7 @@ Após a configuração das conexões entre o Grafana, o PostgreSQL e o Zabbix, r
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=1\linewidth]{fig/dashboard1.png}
+    \includegraphics[width=1\linewidth]{fig/zabbix/dashboard1.png}
     \caption{Acesso ao menu de painéis de controle do Grafana: 1. Painéis de controle.}
     \label{fig:grafanaDashboard1}
 \end{figure}
@@ -289,7 +261,7 @@ Em seguida, foi criado um novo painel por meio da opção \textit{Novo} e, poste
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=1\linewidth]{fig/dashboard2.png}
+    \includegraphics[width=1\linewidth]{fig/zabbix/dashboard2.png}
     \caption{Criação de um novo painel de controle: 1. Menu Novo; 2. Novo painel de controle.}
     \label{fig:grafanaDashboard2}
 \end{figure}
@@ -298,7 +270,7 @@ Após a criação do painel, adicionou-se uma nova visualização utilizando a o
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=1\linewidth]{fig/dashboard3.png}
+    \includegraphics[width=1\linewidth]{fig/zabbix/dashboard3.png}
     \caption{Adição de uma nova visualização ao painel: 1. Adicionar painel.}
     \label{fig:grafanaDashboard3}
 \end{figure}
@@ -307,7 +279,7 @@ Posteriormente, selecionou-se a opção \textit{Configure visualization} para in
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=1\linewidth]{fig/dashboard4.png}
+    \includegraphics[width=1\linewidth]{fig/zabbix/dashboard4.png}
     \caption{Configuração da visualização do painel: 1. Configure visualization.}
     \label{fig:grafanaDashboard4}
 \end{figure}
@@ -316,7 +288,7 @@ Na etapa seguinte, foi realizada a configuração da consulta utilizada para exi
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=1\linewidth]{fig/dashboard5.png}
+    \includegraphics[width=1\linewidth]{fig/zabbix/dashboard5.png}
     \caption{Configuração da consulta do painel: 1. Fonte de dados; 2. Tipo de consulta; 3. Grupo; 4. Host; 5. Tag do item; 6. Item monitorado; 7. Visualização do painel.}
     \label{fig:grafanaDashboard5}
 \end{figure}
@@ -325,7 +297,7 @@ Por fim, após a configuração do painel, utilizou-se a opção \textit{Salvar}
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=1\linewidth]{fig/dashboard6.png}
+    \includegraphics[width=1\linewidth]{fig/zabbix/dashboard6.png}
     \caption{Salvamento do painel configurado: 1. Botão Salvar.}
     \label{fig:grafanaDashboard6}
 \end{figure}

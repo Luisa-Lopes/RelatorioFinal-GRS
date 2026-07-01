@@ -17,24 +17,23 @@
 
 vyos@vyos:~$ configure
 
-vyos@vyos:~# set interfaces ethernet eth0 address 192.168.15.3/28
+vyos@vyos:~# set interfaces ethernet eth0 address 172.24.254.2/30
 vyos@vyos:~# set interfaces ethernet eth1 address 172.24.1.254/24 
-vyos@vyos:~# set interfaces ethernet eth1 vif 2 description 'VLAN 2'
-vyos@vyos:~# set interfaces ethernet eth1 vif 10 address '172.24.2.254/24'
-vyos@vyos:~# set interfaces ethernet eth1 vif 10 description 'INTRANET'
-vyos@vyos:~# set interfaces ethernet eth1 vif 10 address '172.24.20.254/24'
-vyos@vyos:~# set interfaces ethernet eth1 vif 20 description 'DC'
-vyos@vyos:~# set interfaces ethernet eth1 vif 20 address '172.24.30.254/24'
-vyos@vyos:~# set interfaces ethernet eth1 vif 30 description 'DMZ'
 
-
+vyos@vyos:~# set interfaces ethernet eth1 vif 20 description 'INTRANET'
+vyos@vyos:~# set interfaces ethernet eth1 vif 20 address '172.24.20.254/24'
+vyos@vyos:~# set interfaces ethernet eth1 vif 30 description 'DC'
 vyos@vyos:~# set interfaces ethernet eth1 vif 30 address '172.24.30.254/24'
 
-vyos@vyos:~# set protocols static route 0.0.0.0/0 next-hop 192.168.15.1
+vyos@vyos:~# set protocols static route 0.0.0.0/0 next-hop 172.24.254.1
 
-vyos@vyos:~# set nat source rule 100 outbound-interface name 'eth0'
-vyos@vyos:~# set nat source rule 100 source address '172.24.0.0/16'
-vyos@vyos:~# set nat source rule 100 translation address 'masquerade'
+vyos@vyos:~# set service dhcp-server shared-network-name INTRANET subnet 172.24.20.0/24 default-router '172.24.20.254'
+vyos@vyos:~# set service dhcp-server shared-network-name INTRANET subnet 172.24.20.0/24 dns-server '172.16.30.11'
+vyos@vyos:~# set service dhcp-server shared-network-name INTRANET subnet 172.24.20.0/24 start '172.24.20.10' stop '172.24.20.100'
+
+vyos@vyos:~# set service dhcp-server shared-network-name DC subnet 172.24.30.0/24 default-router '172.24.30.254'
+vyos@vyos:~# set service dhcp-server shared-network-name DC subnet 172.24.30.0/24 dns-server '172.16.30.11'
+vyos@vyos:~# set service dhcp-server shared-network-name DC subnet 172.24.30.0/24 start '172.24.30.10' stop '172.24.30.100'
 
 vyos@vyos:~# set service snmp community grs authorization rw
 vyos@vyos:~# set service snmp community grs network 172.24.0.0/16
@@ -175,14 +174,14 @@ configure
 
 # Interfaces
 set interfaces ethernet eth0 address 192.168.15.1/28
-set interfaces ethernet eth1 address 192.168.15.19/28
+set interfaces ethernet eth1 address '172.24.40.254/24'
 set interfaces ethernet eth2 address 192.168.15.34/28
 set interfaces ethernet eth3 address 192.168.15.49/28
 set interfaces loopback lo address 10.3.3.3/32
 
 # OSPF
 set protocols ospf area 0 network 192.168.15.0/28
-set protocols ospf area 0 network 192.168.15.16/28
+set protocols ospf area 0 network '172.24.40.0/24'
 set protocols ospf area 0 network 192.168.15.32/28
 set protocols ospf area 0 network 192.168.15.48/28
 
@@ -190,6 +189,12 @@ vyos@vyos:~# set protocols ospf log-adjacency-changes
 vyos@vyos:~# set protocols ospf parameters router-id 10.3.3.3
 vyos@vyos:~# set protocols ospf redistribute connected metric-type 2
 vyos@vyos:~# set protocols ospf redistribute connected route-map CONNECT
+
+set service dhcp-server shared-network-name TESTE subnet 172.24.40.0/24 default-router '172.24.40.254'
+set service dhcp-server shared-network-name TESTE subnet 172.24.40.0/24 dns-server '172.16.4.2'
+
+set service dhcp-server shared-network-name TESTE subnet 172.24.40.0/24 range 0 start '172.24.40.10'
+set service dhcp-server shared-network-name TESTE subnet 172.24.40.0/24 range 0 stop '172.24.40.30'
 
 # Route-map
 set policy route-map CONNECT rule 10 action 'permit'
@@ -222,22 +227,18 @@ exit
     fontsize=\footnotesize,
 ]{bash}
 
-configure vlan default del ports all
-create vlan EXOS1
-configure vlan EXOS1 tag 2
-create vlan ENE
-configure vlan ENE tag 10
-create vlan PPEE
-configure vlan PPEE tag 20
-create vlan GERENCIA
+create vlan INTRANET tag 20
+create vlan DC tag 30
 
-configure vlan GERENCIA tag 30
-configure vlan 30 add port 4 untagged
-configure vlan 30 add port 5 untagged
-configure vlan 2,10,20,30 add port 1,2,3 tagged
+configure vlan INTRANET add ports 2 untagged
+configure vlan INTRANET add ports 3 untagged
+configure vlan INTRANET add ports 4 untagged
 
-configure vlan EXOS1 ipaddress 172.24.2.1/24
-configure iproute add default 172.24.2.254
+configure vlan DC add ports 5 untagged
+
+configure vlan INTRANET add ports 1 tagged
+configure vlan DC add ports 1 tagged
+
 
 configure snmp add community readwrite grs
 configure snmp sysContact EXOS1
@@ -263,23 +264,19 @@ save
     fontsize=\footnotesize,
 ]{bash}
 
-configure vlan default del ports all
-create vlan EXOS2
-configure vlan EXOS2 tag 2
-create vlan ENE
-configure vlan ENE tag 10
-create vlan PPEE
-configure vlan PPEE tag 20
-create vlan GERENCIA
+create vlan INTRANET tag 20
+create vlan DC tag 30
 
-configure vlan GERENCIA tag 30
-configure vlan 2,10-30 add port 1 tagged
-configure vlan 10 add port 2 untagged
-configure vlan 20 add port 3 untagged
-configure vlan 30 add port 4 untagged
+configure vlan DC add ports 2 untagged
+configure vlan DC add ports 3 untagged
+configure vlan DC add ports 4 untagged
+configure vlan DC add ports 5 untagged
+configure vlan DC add ports 6 untagged
 
-configure vlan EXOS2 ipaddress 172.24.2.2/24
-configure iproute add default 172.24.2.254 
+configure vlan INTRANET add ports 7 untagged
+
+configure vlan INTRANET add ports 1 tagged
+configure vlan DC add ports 1 tagged
 
 configure snmp add community readwrite grs
 configure snmp sysContact EXOS2
@@ -295,7 +292,7 @@ save
 \label{lst:exos2}
 \end{listing}
 
-\section{Configuração de Switch EXOS3}
+\section{Configuração de Switch DMZ}
 
 \begin{listing}[H]
 \centering
@@ -308,30 +305,22 @@ save
 ]{bash}
 
 configure vlan default del ports all
-create vlan EXOS3
-configure vlan EXOS3 tag 2
-create vlan ENE
-configure vlan ENE tag 10
-create vlan PPEE
-configure vlan PPEE tag 20
-create vlan GERENCIA
 
-configure vlan GERENCIA tag 30
-configure vlan 2,10-30 add port 1 tagged
-configure vlan 10 add port 2 untagged
-configure vlan 20 add port 3 untagged
-configure vlan 30 add port 4 untagged
+create vlan DMZ
+configure vlan DMZ tag 10
 
-configure vlan EXOS3 ipaddress 172.24.2.3/24
-configure iproute add default 172.24.2.254 
+configure vlan 10 add port 2,3,4 untagged
+configure vlan 10 add port 1 tagged
+
+configure vlan DMZ ipaddress 172.24.10.2/24
+configure iproute add default 172.24.10.1
 
 configure snmp add community readwrite grs
-configure snmp sysContact EXOS3
-configure snmp sysName EXOS3
+configure snmp sysContact EXOSDMZ
+configure snmp sysName EXOSDMZ
 enable snmp access snmp-v1v2c 
 
-save
-
+save 
 
 \end{minted}
 \caption{Configuração de Switch EXOS3}
