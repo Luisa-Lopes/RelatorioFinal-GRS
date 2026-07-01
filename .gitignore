@@ -1,50 +1,54 @@
 # Arquivos gerados pelo LaTeX
 *.aux
-*.log
-*.out
-*.toc
-*.lof
-*.lot
-*.fls
-*.fdb_latexmk
-*.synctex.gz
-*.bbl
-*.blg
 *.bcf
-*.run.xml
+*.blg
+*.fdb_latexmk
+*.fls
+*.lof
+*.log
+*.lot
 *.nav
+*.out
+*.run.xml
 *.snm
+*.synctex.gz
+*.toc
 *.vrb
 *.xdv
-
-# Latexmk
 *.latexmk
 
-# PDF (opcional)
-.pdf
+# Bibliografia gerada. O projeto deve compilar a partir de egbib.bib.
+*.bbl
+
+# Cache gerado pelo minted
+_minted*/
+*.pyg
+
+# Logs locais de compilação
+build*.log
+latexmk*.log
+
+# PDFs gerados, exceto o PDF principal se você quiser mantê-lo no repositório.
+*.pdf
+!main.pdf
 
 # Arquivos temporários de editores
 *.swp
 *.swo
 *~
-
-# VS Code
-.vscode/
-
-# TeXstudio
-*.txss
-
-# TeXworks
 *.bak
 
+# Configurações locais de IDE/editor
+.vscode/
+*.txss
 
-#minted
-_minted*
-*.pyg
-*.aux
-*.log
-*.out
-*.toc
-*.fls
-*.fdb_latexmk
-*.synctex.gz
+# Arquivos necessários para compilar que devem poder subir para o GitHub
+!*.tex
+!*.bib
+!*.bst
+!*.sty
+!*.cls
+!*.png
+!*.jpg
+!*.jpeg
+!latexmkrc
